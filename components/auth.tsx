@@ -1,33 +1,48 @@
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
+import { supabase } from '../supabase/utils/supabase';
 
-export default function() {
+export default function Auth({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
   GoogleSignin.configure({
-  webClientId: '954533363910-i04rkv218ro33l80if7prsc3s4288ajt.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
-  scopes: [
-    /* what APIs you want to access on behalf of the user, default is email and profile
-    this is just an example, most likely you don't need this option at all! */
-    'https://www.googleapis.com/auth/drive.readonly'],
-});
+    webClientId: '954533363910-ig67fb829qqm4tvpmcgbu9bd86pc0c2g.apps.googleusercontent.com',
+    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+  });
 
-return(
-  <GoogleSigninButton
-    size={GoogleSigninButton.Size.Wide}
-    color={GoogleSigninButton.Color.Dark}
-    onPress={async () => {
-      try {
-        await GoogleSignin.hasPlayServices();
-        const response = await GoogleSignin.signIn();
-        console.log(JSON.stringify(response.user, null, 2));
-      } catch (error: any) {
-        if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-          console.log('User cancelled signin');
-        } else if (error.code === statusCodes.IN_PROGRESS) {
-          console.log('Signin in progress');
-        } else {
-          console.log('Something went wrong', error);
+  return (
+    <GoogleSigninButton
+      size={GoogleSigninButton.Size.Wide}
+      color={GoogleSigninButton.Color.Dark}
+      onPress={async () => {
+        try {
+          await GoogleSignin.hasPlayServices();
+          const userInfo = await GoogleSignin.signIn();
+          console.log(JSON.stringify(userInfo, null, 2));
+          if ((userInfo as any)?.data?.idToken) {
+            const { data, error } = await supabase.auth.signInWithIdToken({
+              provider: 'google',
+              token: (userInfo as any).data.idToken,
+            });
+            if (error) {
+              console.log('Supabase error:', error);
+            } else {
+              console.log('Signed in:', data);
+              onLoginSuccess?.();
+            }
+          } else {
+            console.log('No idToken in response');
+          }
+        } catch (error: any) {
+          if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+            console.log('User cancelled login');
+          } else if (error.code === statusCodes.IN_PROGRESS) {
+            console.log('Sign in in progress');
+          } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+            console.log('Play services not available');
+          } else {
+            console.log('Some other error happened', error);
+          }
         }
-      }
-    }}
-  />
-);
+      }}
+    />
+  );
 }
+
