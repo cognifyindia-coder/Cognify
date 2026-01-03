@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Animated, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Animated, Image, ActivityIndicator } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import { useFonts } from 'expo-font';
 import { supabase } from '../supabase/utils/supabase';
@@ -48,6 +48,9 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: '100%',
     marginBottom: 12,
+    minHeight: 90,
+    flexShrink: 0,
+    position: 'relative',
   },
   input: {
     backgroundColor: 'rgba(20, 15, 35, 0.6)',
@@ -68,7 +71,18 @@ const styles = StyleSheet.create({
     color: '#C084FC',
     fontFamily: 'InterBold',
     textAlign: 'center',
-    marginBottom: 80,
+    marginTop: -35,
+    marginBottom: 0,
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#EF4444',
+    fontFamily: 'InterBold',
+    textAlign: 'center',
+    position: 'absolute',
+    bottom: -25,
+    left: 0,
+    right: 0,
   },
   nextButton: {
     backgroundColor: '#1D9BF0',
@@ -78,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    bottom: 80,
+    bottom: 50,
   },
   nextButtonText: {
     fontSize: 32,
@@ -96,6 +110,7 @@ export default function OnboardingUsernameScreen() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [usernameError, setUsernameError] = useState('');
   const previewOpacity = useRef(new Animated.Value(0)).current;
   const previewScale = useRef(new Animated.Value(0.8)).current;
 
@@ -139,10 +154,11 @@ export default function OnboardingUsernameScreen() {
 
   const handleNext = async () => {
     if (!username.trim()) {
-      console.log('Please enter a username');
+      setUsernameError('Please enter a username');
       return;
     }
 
+    setUsernameError('');
     setIsLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -157,7 +173,7 @@ export default function OnboardingUsernameScreen() {
           .single();
 
         if (existingUser) {
-          console.log('Username already taken');
+          setUsernameError('Username is not available');
           setIsLoading(false);
           return;
         }
@@ -177,6 +193,7 @@ export default function OnboardingUsernameScreen() {
       }
     } catch (error) {
       console.log('Error:', error);
+      setUsernameError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -223,11 +240,17 @@ export default function OnboardingUsernameScreen() {
                 placeholder="username"
                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
                 value={username}
-                onChangeText={setUsername}
+                onChangeText={(text) => {
+                  setUsername(text);
+                  setUsernameError('');
+                }}
                 editable={!isLoading}
                 autoCapitalize="none"
                 selectionColor="#A855F7"
               />
+              {usernameError && (
+                <Text style={styles.errorText}>{usernameError}</Text>
+              )}
             </View>
 
             <Animated.View
@@ -236,7 +259,7 @@ export default function OnboardingUsernameScreen() {
                 transform: [{ scale: previewScale }],
               }}
             >
-              {username && (
+              {username && !usernameError && (
                 <Text style={styles.previewText}>
                   @{username}
                 </Text>
@@ -249,10 +272,14 @@ export default function OnboardingUsernameScreen() {
               activeOpacity={0.8}
               disabled={isLoading}
             >
-              <Image
-                source={require('../assets/arrow.png')}
-                style={styles.nextButtonIcon}
-              />
+              {isLoading ? (
+                <ActivityIndicator size="large" color="#FFFFFF" />
+              ) : (
+                <Image
+                  source={require('../assets/arrow.png')}
+                  style={styles.nextButtonIcon}
+                />
+              )}
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>

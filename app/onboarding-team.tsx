@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform, Keyboard, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { useFonts } from 'expo-font';
@@ -519,10 +519,14 @@ export default function OnboardingTeamScreen() {
           activeOpacity={0.8}
           disabled={isLoading}
         >
-          <Image
-            source={require('../assets/arrow.png')}
-            style={styles.nextButtonIcon}
-          />
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#FFFFFF" />
+          ) : (
+            <Image
+              source={require('../assets/arrow.png')}
+              style={styles.nextButtonIcon}
+            />
+          )}
         </TouchableOpacity>
       </LinearGradient>
 

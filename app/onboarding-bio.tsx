@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
 import { supabase } from '../supabase/utils/supabase';
@@ -204,10 +204,14 @@ export default function OnboardingBioScreen() {
               activeOpacity={0.8}
               disabled={isLoading}
             >
-              <Image
-                source={require('../assets/arrow.png')}
-                style={styles.nextButtonIcon}
-              />
+              {isLoading ? (
+                <ActivityIndicator size="large" color="#FFFFFF" />
+              ) : (
+                <Image
+                  source={require('../assets/arrow.png')}
+                  style={styles.nextButtonIcon}
+                />
+              )}
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
