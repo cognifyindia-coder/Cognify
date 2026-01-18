@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "954533363910",
+    "project_id": "gen-lang-client-0518449062",
+    "storage_bucket": "gen-lang-client-0518449062.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954533363910:android:f87ce7b11cf685d85857c7",
+        "android_client_info": {
+          "package_name": "com.atlfrz.cognify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "954533363910-ig67fb829qqm4tvpmcgbu9bd86pc0c2g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG055LoeR0_bjIpHA7935vLqA78GkhJMk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "954533363910-ig67fb829qqm4tvpmcgbu9bd86pc0c2g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "954533363910-nqmi0tbrec9s9ckd7uvg9pbjg32pfc4c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pikachu.cognify"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954533363910:android:9f54e3d8bf28ee565857c7",
+        "android_client_info": {
+          "package_name": "com.pikachu.cognify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "954533363910-ig67fb829qqm4tvpmcgbu9bd86pc0c2g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG055LoeR0_bjIpHA7935vLqA78GkhJMk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "954533363910-ig67fb829qqm4tvpmcgbu9bd86pc0c2g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "954533363910-nqmi0tbrec9s9ckd7uvg9pbjg32pfc4c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pikachu.cognify"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
