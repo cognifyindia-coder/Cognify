@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FontAwesome5 } from '@expo/vector-icons';
+import LottieView from 'lottie-react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { supabase } from '../supabase/utils/supabase';
 import PromptCard from '../components/prompt-card';
 import { parsePromptContent, parseFullContent } from '../utils/contentParser';
@@ -9,7 +11,7 @@ import { parsePromptContent, parseFullContent } from '../utils/contentParser';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0A0E27',
+        backgroundColor: '#0F0F0F',
     },
     content: {
         padding: 20,
@@ -17,16 +19,18 @@ const styles = StyleSheet.create({
     },
     header: {
         marginBottom: 24,
+        backgroundColor: '#0F0F0F',
+        paddingBottom: 10,
     },
     title: {
-        fontSize: 32,
-        fontWeight: '700',
-        color: '#FFFFFF',
-        marginBottom: 6,
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#fff',
+        marginBottom: 8,
     },
     subtitle: {
         fontSize: 14,
-        color: '#8FA3BE',
+        color: '#A0A9FF',
     },
     searchBarContainer: {
         marginBottom: 0,
@@ -34,19 +38,19 @@ const styles = StyleSheet.create({
     searchBar: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(26, 31, 53, 0.6)',
-        borderRadius: 12,
+        backgroundColor: '#1F172A',
+        borderRadius: 14,
         paddingHorizontal: 14,
-        paddingVertical: 8,
+        paddingVertical: 12,
         borderWidth: 1,
-        borderColor: 'rgba(100, 100, 180, 0.3)',
+        borderColor: '#1F2937',
         marginBottom: 16,
     },
     searchInput: {
         flex: 1,
         marginLeft: 10,
         fontSize: 14,
-        color: '#E0E7FF',
+        color: '#e5e7eb',
     },
     filterRow: {
         flexDirection: 'row',
@@ -58,16 +62,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: 'rgba(26, 31, 53, 0.6)',
-        borderRadius: 12,
+        backgroundColor: '#1F172A',
+        borderRadius: 14,
         paddingHorizontal: 14,
         paddingVertical: 12,
         borderWidth: 1,
-        borderColor: 'rgba(100, 100, 180, 0.3)',
+        borderColor: '#1F2937',
     },
     filterText: {
         fontSize: 14,
-        color: '#E0E7FF',
+        color: '#e5e7eb',
         fontWeight: '500',
     },
     buttonRow: {
@@ -78,15 +82,15 @@ const styles = StyleSheet.create({
     button: {
         flex: 1,
         paddingVertical: 12,
-        borderRadius: 12,
+        borderRadius: 14,
         alignItems: 'center',
-        backgroundColor: 'rgba(26, 31, 53, 0.6)',
+        backgroundColor: '#1F172A',
         borderWidth: 1,
-        borderColor: 'rgba(100, 100, 180, 0.3)',
+        borderColor: '#1F2937',
     },
     buttonText: {
         fontSize: 14,
-        color: '#E0E7FF',
+        color: '#e5e7eb',
         fontWeight: '600',
     },
     tabsContainer: {
@@ -104,7 +108,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         backgroundColor: 'transparent',
         borderWidth: 1,
-        borderColor: 'rgba(100, 100, 180, 0.3)',
+        borderColor: '#1F2937',
     },
     tabActive: {
         backgroundColor: '#6366F1',
@@ -113,7 +117,7 @@ const styles = StyleSheet.create({
     tabText: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#8FA3BE',
+        color: '#94a3b8',
     },
     tabTextActive: {
         color: '#FFFFFF',
@@ -126,7 +130,7 @@ const styles = StyleSheet.create({
     emptyStateTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: '#8FA3BE',
+        color: '#94a3b8',
         marginBottom: 12,
         textAlign: 'center',
     },
@@ -265,38 +269,47 @@ export default function SearchScreen() {
 
                     {/* Prompts List */}
                     {loading ? (
-                        <View style={styles.emptyStateContainer}>
-                            <Text style={styles.emptyStateTitle}>Loading prompts...</Text>
+                        <View style={[styles.emptyStateContainer, { paddingVertical: 100 }]}>
+                            <LottieView
+                                source={require('../assets/loading.json')}
+                                autoPlay
+                                loop
+                                style={{ width: 200, height: 200 }}
+                            />
                         </View>
                     ) : prompts.length > 0 ? (
                         <View>
-                             {prompts.map((prompt) => {
+                             {prompts.map((prompt, index) => {
                                  const parsedContent = parseFullContent(prompt.content);
                                  return (
-                                     <PromptCard
+                                     <Animated.View
                                          key={prompt.id}
-                                         title={prompt.title}
-                                         description={parsedContent.description}
-                                         category={prompt.library || 'General'}
-                                         tag={parsedContent.library || prompt.library}
-                                         likes={prompt.likes || 0}
-                                     views={prompt.views || 0}
-                                     creatorName={prompt.profiles?.display_name || prompt.profiles?.username || 'Anonymous'}
-                                     creatorAvatar={prompt.profiles?.avatar_url}
-                                     thumbnailUrl={prompt.thumbnail_url}
-                                     onCopyToLibrary={() => {
-                                         console.log('Copy to library:', prompt.id);
-                                     }}
-                                     onSave={() => {
-                                         console.log('Save:', prompt.id);
-                                     }}
-                                     onLike={() => {
-                                         console.log('Like:', prompt.id);
-                                     }}
-                                     onShare={() => {
-                                         console.log('Share:', prompt.id);
-                                     }}
-                                     />
+                                         entering={FadeInDown.delay(index * 100).springify()}
+                                     >
+                                         <PromptCard
+                                             title={prompt.title}
+                                             description={parsedContent.description}
+                                             category={prompt.library || 'General'}
+                                             tag={parsedContent.library || prompt.library}
+                                             likes={prompt.likes || 0}
+                                             views={prompt.views || 0}
+                                             creatorName={prompt.profiles?.display_name || prompt.profiles?.username || 'Anonymous'}
+                                             creatorAvatar={prompt.profiles?.avatar_url}
+                                             thumbnailUrl={prompt.thumbnail_url}
+                                             onCopyToLibrary={() => {
+                                                 console.log('Copy to library:', prompt.id);
+                                             }}
+                                             onSave={() => {
+                                                 console.log('Save:', prompt.id);
+                                             }}
+                                             onLike={() => {
+                                                 console.log('Like:', prompt.id);
+                                             }}
+                                             onShare={() => {
+                                                 console.log('Share:', prompt.id);
+                                             }}
+                                         />
+                                     </Animated.View>
                                  );
                              })}
                          </View>

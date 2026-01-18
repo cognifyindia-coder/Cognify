@@ -2,10 +2,13 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import { supabase } from '../supabase/utils/supabase';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import ParticlesBackground from '../components/particles-background';
+
+SplashScreen.preventAutoHideAsync();
 
 const styles = StyleSheet.create({
   container: {
@@ -75,9 +78,18 @@ export default function OnboardingScreen() {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     'InterBold': require('../assets/fonts/Inter-Bold.otf'),
   });
+
+  useEffect(() => {
+    if (fontError) {
+      console.log('Font loading error:', fontError);
+    }
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
 
   const handleNext = async () => {
     if (!name.trim()) {
@@ -110,8 +122,12 @@ export default function OnboardingScreen() {
     }
   };
 
-  if (!fontsLoaded) {
-    return null;
+  if (!fontsLoaded && !fontError) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#A855F7" />
+      </View>
+    );
   }
 
   return (

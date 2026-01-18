@@ -21,7 +21,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.atlfrz.cognify"
+      "package": "com.atlfrz.cognify",
+      "googleServicesFile": "./android/google-services.json"
     },
     "web": {
       "output": "static",

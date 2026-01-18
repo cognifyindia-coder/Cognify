@@ -2,17 +2,20 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Animated, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState, useRef } from 'react';
 import { useFonts } from 'expo-font';
+import { useFocusEffect } from 'expo-router';
 import { supabase } from '../supabase/utils/supabase';
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
+import { createMobileCheckout } from '../supabase/utils/payments';
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0A0E27',
+        backgroundColor: '#0F0F0F',
     },
     header: {
-        backgroundColor: '#1A1A2E',
+        backgroundColor: '#0F0F0F',
         paddingTop: 50,
         paddingBottom: 30,
         paddingHorizontal: 20,
@@ -33,43 +36,43 @@ const styles = StyleSheet.create({
     },
     section: {
         marginBottom: 24,
-        backgroundColor: 'rgba(26, 31, 53, 0.5)',
+        backgroundColor: '#1F172A',
         borderRadius: 14,
         padding: 16,
         borderWidth: 1,
-        borderColor: '#2D3B5C',
+        borderColor: '#1F2937',
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: '#E0E7FF',
+        color: '#e5e7eb',
         marginBottom: 6,
     },
     sectionSubtitle: {
         fontSize: 13,
-        color: '#8FA3BE',
+        color: '#94a3b8',
         marginBottom: 14,
     },
     card: {
-        backgroundColor: 'rgba(45, 42, 95, 0.4)',
+        backgroundColor: '#1F172A',
         borderRadius: 10,
         padding: 14,
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#3D3A6F',
+        borderColor: '#1F2937',
     },
     cardText: {
         fontSize: 14,
-        color: '#C5D1FF',
+        color: '#e5e7eb',
         lineHeight: 20,
     },
     userCard: {
-        backgroundColor: '#2D2A5F',
+        backgroundColor: '#1F172A',
         borderRadius: 12,
         padding: 16,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: '#4F46E5',
+        borderColor: '#1F2937',
     },
     userEmail: {
         fontSize: 16,
@@ -92,34 +95,34 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 15,
         paddingTop: 70,
-        backgroundColor: '#1A1A2E',
+        backgroundColor: '#0F0F0F',
     },
     selectorButton: {
-        backgroundColor: '#2D2A5F',
+        backgroundColor: '#1F172A',
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#4F46E5',
+        borderColor: '#1F2937',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
     selectorText: {
         fontSize: 14,
-        color: '#fff',
+        color: '#e5e7eb',
         fontWeight: '500',
     },
     dropdownOverlay: {
         position: 'absolute',
         top: 70,
         right: 0,
-        backgroundColor: 'rgba(45, 42, 95, 0.95)',
+        backgroundColor: '#1F172A',
         borderRadius: 14,
         borderWidth: 1.5,
-        borderColor: 'rgba(99, 102, 241, 0.5)',
+        borderColor: '#1F2937',
         zIndex: 1000,
-        shadowColor: '#6366F1',
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.25,
         shadowRadius: 16,
@@ -134,31 +137,31 @@ const styles = StyleSheet.create({
         right: 12,
         width: 14,
         height: 14,
-        backgroundColor: 'rgba(45, 42, 95, 0.95)',
+        backgroundColor: '#1F172A',
         transform: [{ rotate: '45deg' }],
         borderTopWidth: 1.5,
         borderLeftWidth: 1.5,
-        borderTopColor: 'rgba(99, 102, 241, 0.5)',
-        borderLeftColor: 'rgba(99, 102, 241, 0.5)',
+        borderTopColor: '#1F2937',
+        borderLeftColor: '#1F2937',
         zIndex: 1001,
     },
     dropdownItem: {
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderBottomWidth: 1,
-        borderBottomColor: 'rgba(99, 102, 241, 0.2)',
+        borderBottomColor: '#2D3B5C',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
     },
     dropdownItemText: {
         fontSize: 14,
-        color: '#E0E7FF',
+        color: '#e5e7eb',
         fontWeight: '500',
         flex: 1,
     },
     dropdownItemActive: {
-        backgroundColor: 'rgba(99, 102, 241, 0.3)',
+        backgroundColor: '#2D3B5C',
         borderLeftWidth: 3,
         borderLeftColor: '#6366F1',
         paddingHorizontal: 13,
@@ -179,9 +182,9 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 24,
-        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+        backgroundColor: '#1F172A',
         borderWidth: 2,
-        borderColor: '#6366F1',
+        borderColor: '#1F2937',
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
@@ -193,7 +196,7 @@ const styles = StyleSheet.create({
     },
     avatarPlaceholder: {
         fontSize: 24,
-        color: '#6366F1',
+        color: '#e5e7eb',
         fontWeight: '700',
     },
     statsContainer: {
@@ -206,12 +209,12 @@ const styles = StyleSheet.create({
         borderColor: '#2D3B5C',
     },
     statCard: {
-        backgroundColor: 'rgba(26, 31, 53, 0.6)',
+        backgroundColor: '#1F172A',
         borderRadius: 12,
         padding: 14,
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: 'rgba(100, 100, 180, 0.3)',
+        borderColor: '#1F2937',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
@@ -237,11 +240,11 @@ const styles = StyleSheet.create({
     },
     statCardSmall: {
         flex: 1,
-        backgroundColor: 'rgba(26, 31, 53, 0.6)',
+        backgroundColor: '#1F172A',
         borderRadius: 12,
         padding: 14,
         borderWidth: 1,
-        borderColor: 'rgba(100, 100, 180, 0.3)',
+        borderColor: '#1F2937',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
@@ -255,7 +258,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         marginBottom: 6,
         letterSpacing: 0.15,
-        color: '#E0E7FF',
+        color: '#e5e7eb',
     },
     statCardStatus: {
         fontSize: 12,
@@ -329,11 +332,11 @@ const styles = StyleSheet.create({
     quickActionsContainer: {
         marginBottom: 24,
         marginTop: 8,
-        backgroundColor: 'rgba(26, 31, 53, 0.5)',
+        backgroundColor: '#1F172A',
         borderRadius: 14,
         padding: 16,
         borderWidth: 1,
-        borderColor: '#2D3B5C',
+        borderColor: '#1F2937',
     },
     quickActionsTitle: {
         fontSize: 18,
@@ -343,18 +346,18 @@ const styles = StyleSheet.create({
     },
     quickActionsSubtitle: {
         fontSize: 13,
-        color: '#8FA3BE',
+        color: '#94a3b8',
         marginBottom: 14,
     },
     actionItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#1A1F35',
+        backgroundColor: '#1F172A',
         borderRadius: 12,
         padding: 14,
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#2D3B5C',
+        borderColor: '#1F2937',
     },
     actionItemIcon: {
         width: 44,
@@ -375,16 +378,16 @@ const styles = StyleSheet.create({
     },
     actionItemDescription: {
         fontSize: 12,
-        color: '#8FA3BE',
+        color: '#94a3b8',
     },
     promptPulseContainer: {
         marginBottom: 24,
         marginTop: 8,
-        backgroundColor: 'rgba(26, 31, 53, 0.5)',
+        backgroundColor: '#1F172A',
         borderRadius: 14,
         padding: 20,
         borderWidth: 1,
-        borderColor: '#2D3B5C',
+        borderColor: '#1F2937',
     },
     promptPulseHeader: {
         marginBottom: 20,
@@ -397,7 +400,7 @@ const styles = StyleSheet.create({
     },
     promptPulseSubtitle: {
         fontSize: 13,
-        color: '#8FA3BE',
+        color: '#94a3b8',
     },
     promptPulseStats: {
         flexDirection: 'row',
@@ -407,21 +410,21 @@ const styles = StyleSheet.create({
     promptPulseStat: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        backgroundColor: '#1F172A',
         borderRadius: 12,
         padding: 16,
         borderWidth: 1,
-        borderColor: 'rgba(99, 102, 241, 0.2)',
+        borderColor: '#1F2937',
     },
     promptPulseStatValue: {
         fontSize: 36,
         fontWeight: '900',
-        color: '#6366F1',
+        color: '#e5e7eb',
         marginBottom: 8,
     },
     promptPulseStatLabel: {
         fontSize: 13,
-        color: '#8FA3BE',
+        color: '#94a3b8',
         fontWeight: '600',
     },
     promptPulseCenter: {
@@ -432,7 +435,7 @@ const styles = StyleSheet.create({
         width: 64,
         height: 64,
         borderRadius: 16,
-        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+        backgroundColor: '#1F172A',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 16,
@@ -446,18 +449,18 @@ const styles = StyleSheet.create({
     },
     promptPulseActionDescription: {
         fontSize: 13,
-        color: '#8FA3BE',
+        color: '#94a3b8',
         textAlign: 'center',
         lineHeight: 20,
     },
     recentPromptsContainer: {
         marginBottom: 24,
         marginTop: 8,
-        backgroundColor: 'rgba(26, 31, 53, 0.5)',
+        backgroundColor: '#1F172A',
         borderRadius: 14,
         padding: 16,
         borderWidth: 1,
-        borderColor: '#2D3B5C',
+        borderColor: '#1F2937',
     },
     recentPromptsHeader: {
         flexDirection: 'row',
@@ -473,7 +476,7 @@ const styles = StyleSheet.create({
     },
     recentPromptsSubtitle: {
         fontSize: 13,
-        color: '#8FA3BE',
+        color: '#94a3b8',
     },
     sortButton: {
         flexDirection: 'row',
@@ -481,9 +484,9 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         paddingHorizontal: 12,
         borderRadius: 8,
-        backgroundColor: '#1A1F35',
+        backgroundColor: '#1F172A',
         borderWidth: 1,
-        borderColor: '#2D3B5C',
+        borderColor: '#1F2937',
     },
     sortButtonText: {
         fontSize: 13,
@@ -492,12 +495,12 @@ const styles = StyleSheet.create({
         marginRight: 6,
     },
     promptCard: {
-        backgroundColor: 'rgba(45, 42, 95, 0.4)',
+        backgroundColor: '#1F172A',
         borderRadius: 10,
         padding: 12,
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#3D3A6F',
+        borderColor: '#1F2937',
     },
     promptCardHeader: {
         flexDirection: 'row',
@@ -527,19 +530,19 @@ const styles = StyleSheet.create({
     },
     promptDescription: {
         fontSize: 13,
-        color: '#8FA3BE',
+        color: '#94a3b8',
         marginTop: 4,
         marginLeft: 34,
     },
     promptCategory: {
-        backgroundColor: '#2D3B5C',
+        backgroundColor: '#1F172A',
         paddingVertical: 4,
         paddingHorizontal: 10,
         borderRadius: 12,
     },
     promptCategoryText: {
         fontSize: 11,
-        color: '#8FA3BE',
+        color: '#94a3b8',
         fontWeight: '500',
     },
     promptCardFooter: {
@@ -554,24 +557,24 @@ const styles = StyleSheet.create({
     },
     promptMetadataText: {
         fontSize: 12,
-        color: '#8FA3BE',
+        color: '#94a3b8',
         marginLeft: 6,
         marginRight: 10,
     },
     promptPrivateTag: {
-        backgroundColor: '#2D3B5C',
+        backgroundColor: '#1F172A',
         paddingVertical: 4,
         paddingHorizontal: 10,
         borderRadius: 12,
     },
     promptPrivateTagText: {
         fontSize: 11,
-        color: '#8FA3BE',
+        color: '#94a3b8',
         fontWeight: '500',
     },
     promptParams: {
         fontSize: 12,
-        color: '#8FA3BE',
+        color: '#94a3b8',
     },
     viewAllPrompts: {
         flexDirection: 'row',
@@ -605,6 +608,27 @@ export default function HomePage() {
      const [promptLikes, setPromptLikes] = useState(0);
      const dropdownAnim = useRef(new Animated.Value(0)).current;
 
+     // Dodo Payments: start hosted checkout session via Supabase Edge Function
+     const [checkoutLoading, setCheckoutLoading] = useState(false);
+     const handleGoPro = async () => {
+       try {
+         setCheckoutLoading(true);
+         const checkoutUrl = await createMobileCheckout({
+           type: 'subscription',
+           // No trials and product IDs resolved server-side from subscription_plans by plan_key + currency
+           quantity: 1,
+           metadata: { plan_key: 'pro' },
+         });
+         await WebBrowser.openBrowserAsync(checkoutUrl);
+         // On completion Dodo will deep link back to cognify://payments/complete
+         // You can refresh entitlements on focus or in the deep link screen.
+       } catch (e) {
+         console.error('Checkout error:', e);
+       } finally {
+         setCheckoutLoading(false);
+       }
+     };
+
      const [fontsLoaded] = useFonts({
         'InterBold': require('../assets/fonts/Inter-Bold.otf'),
     });
@@ -628,6 +652,11 @@ export default function HomePage() {
     useEffect(() => {
         checkSession();
     }, []);
+
+    useFocusEffect(() => {
+        // Refresh data when screen comes into focus
+        checkSession();
+    });
 
     const fetchStatsData = async (userId: string) => {
         try {
@@ -859,6 +888,17 @@ export default function HomePage() {
                         <Text style={styles.quickActionsTitle}>Quick Actions</Text>
                         <Text style={styles.quickActionsSubtitle}>Get started with common tasks</Text>
 
+                        {/* New Chat */}
+                        <TouchableOpacity style={styles.actionItem} onPress={() => router.push('/chat')}>
+                            <View style={[styles.actionItemIcon, { backgroundColor: 'rgba(99, 102, 241, 0.2)' }]}>
+                                <FontAwesome5 name="comments" size={18} color="#6366F1" />
+                            </View>
+                            <View style={styles.actionItemContent}>
+                                <Text style={styles.actionItemTitle}>New Chat</Text>
+                                <Text style={styles.actionItemDescription}>Start a conversation with AI</Text>
+                            </View>
+                        </TouchableOpacity>
+
                         {/* Create New Prompt */}
                         <TouchableOpacity style={styles.actionItem}>
                             <View style={[styles.actionItemIcon, { backgroundColor: 'rgba(168, 85, 247, 0.2)' }]}>
@@ -900,6 +940,19 @@ export default function HomePage() {
                             <View style={styles.actionItemContent}>
                                 <Text style={styles.actionItemTitle}>Manage Libraries</Text>
                                 <Text style={styles.actionItemDescription}>Organize prompt libraries</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        {/* Go Pro / Subscribe (Dodo Payments) */}
+                        <TouchableOpacity style={styles.actionItem} onPress={handleGoPro} disabled={checkoutLoading}>
+                            <View style={[styles.actionItemIcon, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
+                                <FontAwesome5 name="credit-card" size={18} color="#10B981" />
+                            </View>
+                            <View style={styles.actionItemContent}>
+                                <Text style={styles.actionItemTitle}>
+                                    {checkoutLoading ? 'Starting Checkout…' : 'Go Pro (Subscribe)'}
+                                </Text>
+                                <Text style={styles.actionItemDescription}>Unlock premium features</Text>
                             </View>
                         </TouchableOpacity>
                     </View>

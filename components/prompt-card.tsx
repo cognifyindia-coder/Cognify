@@ -3,39 +3,39 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
 const styles = StyleSheet.create({
     cardContainer: {
-        backgroundColor: 'rgba(26, 31, 53, 0.5)',
+        backgroundColor: '#1F172A',
         borderRadius: 16,
         borderWidth: 1,
-        borderColor: 'rgba(100, 100, 180, 0.3)',
+        borderColor: '#1F2937',
         overflow: 'hidden',
         marginBottom: 16,
     },
     thumbnailContainer: {
         position: 'relative',
         height: 200,
-        backgroundColor: 'rgba(10, 14, 39, 0.8)',
+        backgroundColor: '#0F0F0F',
         justifyContent: 'flex-end',
         paddingHorizontal: 16,
         paddingVertical: 12,
     },
     thumbnail: {
         ...StyleSheet.absoluteFillObject,
-        opacity: 0.4,
+        opacity: 1,
     },
     categoryBadge: {
         alignSelf: 'flex-start',
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backgroundColor: '#1F172A',
         paddingVertical: 4,
         paddingHorizontal: 10,
         borderRadius: 6,
         marginBottom: 0,
         borderWidth: 1,
-        borderColor: 'rgba(99, 102, 241, 0.3)',
+        borderColor: '#1F2937',
     },
     categoryText: {
         fontSize: 11,
         fontWeight: '600',
-        color: '#A0A9FF',
+        color: '#94a3b8',
     },
     statsContainer: {
         position: 'absolute',
@@ -48,17 +48,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: '#1F172A',
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 6,
         borderWidth: 1,
-        borderColor: 'rgba(99, 102, 241, 0.3)',
+        borderColor: '#1F2937',
     },
     statText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#E0E7FF',
+        color: '#e5e7eb',
     },
     titleOverlay: {
         position: 'absolute',
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     tagText: {
         fontSize: 11,
         fontWeight: '600',
-        color: '#8FA3BE',
+        color: '#94a3b8',
         fontFamily: 'monospace',
     },
     promptTitle: {
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     },
     promptDescription: {
         fontSize: 13,
-        color: '#A0A9FF',
+        color: '#94a3b8',
         lineHeight: 20,
         marginBottom: 16,
     },
@@ -106,12 +106,12 @@ const styles = StyleSheet.create({
         width: 32,
         height: 32,
         borderRadius: 16,
-        backgroundColor: 'rgba(99, 102, 241, 0.3)',
+        backgroundColor: '#1F172A',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 10,
         borderWidth: 1,
-        borderColor: '#6366F1',
+        borderColor: '#1F2937',
     },
     creatorInfo: {
         flex: 1,
@@ -119,11 +119,11 @@ const styles = StyleSheet.create({
     creatorName: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#E0E7FF',
+        color: '#e5e7eb',
     },
     creatorRole: {
         fontSize: 11,
-        color: '#8FA3BE',
+        color: '#94a3b8',
         marginTop: 2,
     },
     actionContainer: {
@@ -138,14 +138,14 @@ const styles = StyleSheet.create({
         gap: 6,
         paddingVertical: 10,
         borderRadius: 10,
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        backgroundColor: '#1F172A',
         borderWidth: 1,
-        borderColor: 'rgba(99, 102, 241, 0.3)',
+        borderColor: '#1F2937',
     },
     actionButtonText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#A0A9FF',
+        color: '#e5e7eb',
     },
     iconButton: {
         width: 40,
@@ -153,9 +153,9 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        backgroundColor: '#1F172A',
         borderWidth: 1,
-        borderColor: 'rgba(99, 102, 241, 0.3)',
+        borderColor: '#1F2937',
     },
 });
 

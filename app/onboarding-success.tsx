@@ -224,7 +224,11 @@ export default function OnboardingSuccessScreen() {
   };
 
   if (!fontsLoaded) {
-    return null;
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#A855F7" />
+      </View>
+    );
   }
 
   const userName = userInfo?.username || 'Cognify';

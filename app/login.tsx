@@ -185,20 +185,31 @@ export default function LoginScreen() {
           console.log('Supabase error:', error);
           setIsLoading(false);
         } else {
-          console.log('Signed in:', data);
-          // Check if user has onboarded
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('has_onboarded')
-            .eq('id', data.user.id)
-            .single();
+           console.log('Signed in:', data);
+           // Check if user has onboarded
+           const { data: profile, error: profileError } = await supabase
+             .from('profiles')
+             .select('has_onboarded')
+             .eq('id', data.user.id)
+             .single();
 
-          if (profile?.has_onboarded) {
-            router.replace('/');
-          } else {
-            router.replace('/onboarding');
-          }
-        }
+           // If profile doesn't exist, create one and go to onboarding
+           if (profileError) {
+             const { error: createError } = await supabase
+               .from('profiles')
+               .insert([{ id: data.user.id, has_onboarded: false }]);
+             
+             if (createError) {
+               console.log('Error creating profile:', createError);
+             } else {
+               router.replace('/onboarding');
+             }
+           } else if (profile?.has_onboarded) {
+             router.replace('/');
+           } else {
+             router.replace('/onboarding');
+           }
+         }
       }
     } catch (error: any) {
       setIsLoading(false);
@@ -232,7 +243,11 @@ export default function LoginScreen() {
   }, []);
 
   if (!fontsLoaded) {
-    return null;
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#A855F7" />
+      </View>
+    );
   }
 
   const handleTermsPress = () => {

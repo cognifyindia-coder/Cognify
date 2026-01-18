@@ -141,7 +141,11 @@ export default function OnboardingBioScreen() {
   };
 
   if (!fontsLoaded) {
-    return null;
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#A855F7" />
+      </View>
+    );
   }
 
   return (
